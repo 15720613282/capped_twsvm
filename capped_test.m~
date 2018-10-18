@@ -1,0 +1,2545 @@
+% clear
+% %dataset='heart' 
+% %load class2/heart.mat;
+% %load class2/ionosphere.mat;
+% %load class2/heart.mat;%ddd(+)
+% %load class2/ionosphere.mat;
+% %load UCI/liver.mat;
+% %load class2/wpbc.mat;%ddddd(+) eeeee(+-)
+% %load class2/german.mat;%d+
+% %load class2/vote.mat;  %ddddd(+) eeeee(-)
+% % B=[A];
+% %B=[label,data];
+% %load class2/bupadata.mat;%ddddd
+% %load class2/haberman.mat;
+% %load class2/housingdata.mat;%a
+% %load class2/pimadata.mat;
+% %B=[d,A];
+%  %load class2/monk1.mat;    %d+      +
+%  %load class2/monk2.mat;
+%  %load class2/monk3.mat; %  ddddd(+) eeeee(+)
+% %load spect.mat;
+%  %B=[train;test];
+%  % load housingdata.mat;
+% % load haberman.mat; %ddddd eeeee（-）
+% %load dimension2.mat;
+% %B=[d,A];
+%   
+% %load housingdata.mat;
+% load  class2/australian.mat;%(-)
+% %load class2/sonar.mat;
+% B=[A];
+% %B=[label',data];
+% 
+% %load cross2Dnew1.mat;
+% 
+% 
+% %B=[d,A];
+% %B=[Y,X];
+% cla=1;   
+% A=B(1:end,2:end);
+%  Max=max(max(A));
+%  Min=min(min(A));
+%  A=2*(A-Min)./(Max-Min)-1;
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+%     rand('state',a);
+% 
+% 
+%     uniqued = unique(d);
+%     outratio=0.25;
+%     nf=0.1;
+%     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+%         Inde=(find(d==uniqued(jjk,1)));
+%         randn('state',jjk*1000);
+%         %randn('state',a);
+%         outn=fix(size(Inde,1)*outratio);
+%         Mm= sqrt(1)*randn(outn,size(A,2));
+%         %Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+%         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         if jjk==1
+% %         tempdata=Ctrain(Inde(1:outn,:),:);
+% %         end
+%     end
+%     r=randperm(size(A,1));
+%     d=d(r,:);
+%     %r2=randperm(size(Ctrain,1));
+%     A=A(r,:);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% %split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%       % [w1,w2,bias1,bias2,loss1,loss2]=capped_svc_train1(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+%     
+%      %[w1,w2,bias1,bias2]=capped_svc_train4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);   
+%   %[w1,w2,bias1,bias2]=capped_svc4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% %svcplot(Ctest,dtest,'linear',w1,bias1,w2,bias2);
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% % figure;
+% % % % %svcplot(A,d,'linear',w1,bias1,w2,bias2);
+% %  x1=A(find(d==1),:);
+% %  %x2=X(find(Y==2),:);
+% %  x2=A(find(d==-1),:);
+% %  plot(x1(:,1),x1(:,2),'rs',x2(:,1),x2(:,2),'bo');
+% %  hold on;
+% %   a=axis;
+% %   set(gca,'FontSize',12);
+% %   visual_contour(x1,w1,bias1,a,'k-');
+% %   visual_contour(x2,w2,bias2,a,'m-');
+% % l1=legend(['class +1'],['class -1'],'location','best');
+% %  set(l1,'FontSize',12);
+% 
+
+
+% clear
+% dataset='hill-valley' 
+% load multimention/hill-valley.mat;
+% load multimention/hill-valley1.mat;
+% %load Benchmark/Cora_DS_uni.mat
+% B=[data1;data];
+% cla=1;   
+% A=B(1:end,1:end-1);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,end)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+%     rand('state',a);
+% 
+% 
+%     uniqued = unique(d);
+%     outratio=0.25;
+%     nf=0.1;
+%     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+%         Inde=(find(d==uniqued(jjk,1)));
+%         randn('state',jjk*1000);
+%         % randn('state',a);
+%         outn=fix(size(Inde,1)*outratio);
+%         Mm= sqrt(1)*randn(outn,size(A,2));
+%         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+%         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+%         % if jjk==1
+%         % tempdata=Ctrain(Inde(1:outn,:),:);
+%         % end
+%     end
+%     r=randperm(size(A,1));
+%     d=d(r,:);
+%     % r2=randperm(size(Ctrain,1));
+%     A=A(r,:);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+%   
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% %e1=ones(size(cc,1),1);
+% %e2=ones(size(dd,1),1);
+% tic
+% 
+%     
+%        %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% 
+clear
+dataset='madelon' 
+load multimention/madelon.mat;
+%load multimention/internet_ad.mat;%a
+B=[label,data];
+cla=1;   
+A=B(1:end,2:end);
+Max=max(max(A));
+Min=min(min(A));
+A=2*(A-Min)./(Max-Min)-1;
+%A=(A-Min)./(Max-Min);
+d=(B(1:end,1)==cla)*2-1;
+
+ker.type='lin';
+ker.pars=1e-2;
+k=10;output=1;
+a=50;%input('the state=');
+rand('state',a);
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+    rand('state',a);
+
+
+    uniqued = unique(d);
+    outratio=0.25;
+    nf=0.1;
+    for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+        Inde=(find(d==uniqued(jjk,1)));
+        randn('state',jjk*1000);
+        % randn('state',a);
+        outn=fix(size(Inde,1)*outratio);
+        Mm= sqrt(1)*randn(outn,size(A,2));
+        % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+        A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+        % if jjk==1
+        % tempdata=Ctrain(Inde(1:outn,:),:);
+        % end
+    end
+    r=randperm(size(A,1));
+    d=d(r,:);
+    % r2=randperm(size(Ctrain,1));
+    A=A(r,:);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+r=randperm(size(d,1));
+dd=d(r,:);
+AA=A(r,:); 
+dtrain=dd(1:fix(size(r,2)),:);
+Ctrain=AA(1:fix(size(r,2)),:);  
+
+ Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+  C1=Result.Best_C1; 
+  C2=Result.Best_C1;
+   best_noise_c1=Result.noise_c1;
+   best_noise_c2=Result.noise_c2;
+    w1=Result.w1;
+    w2=Result.w2;
+    bias1=Result.bias1;
+    bias2=Result.bias2;   
+    %loss1=Result.loss1;
+    %loss2=Result.loss2;
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+  
+
+
+[sm sn]=size(A);
+cpu_time = 0;
+indx = [0:k];
+indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% split trainining set from test set
+
+trainCorr=0;
+testCorr=0;
+
+a=20;%input('the state=');
+rand('state',a);
+r=randperm(size(d,1));
+d=d(r,:);
+A=A(r,:); 
+
+
+for i = 1:k
+    
+Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+
+Ctest = A((indx(i)+1:indx(i+1)),:);
+dtest = d(indx(i)+1:indx(i+1));
+Ctrain = A(1:indx(i),:);
+Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+
+
+
+% rand('state',a);
+%     outratio=0.2;
+%     nf=0.1;
+%     randn('state',i*1000);
+%     Index=size(Ctrain,1);
+%         outn=fix(Index*outratio);
+%         Mm=sqrt(1)+randn(outn,size(Ctrain,2));
+%     randn('state',i*500);        
+%         dtt= sign(rand(outn,1)-0.5);
+%         dtrain=[dtrain;dtt];
+%         Ctrain=[Ctrain;Mm];
+%     r=randperm(size(Ctrain,1));
+%     dtrain=dtrain(r,:);
+%     Ctrain=Ctrain(r,:);
+
+
+
+% %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+%     rand('state',a);
+% 
+% 
+%     uniqued = unique(dtrain);
+%     outratio=0.2;
+%     nf=0.1;
+%     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+%         Inde=(find(dtrain==uniqued(jjk,1)));
+%         randn('state',jjk*1000);
+%         % randn('state',a);
+%         outn=fix(size(Inde,1)*outratio);
+%         Mm= sqrt(1)*randn(outn,size(Ctrain,2));
+%         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+%         Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+%         % if jjk==1
+%         % tempdata=Ctrain(Inde(1:outn,:),:);
+%         % end
+%     end
+%     r=randperm(size(Ctrain,1));
+%     dtrain=dtrain(r,:);
+%     % r2=randperm(size(Ctrain,1));
+%     Ctrain=Ctrain(r,:);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+
+   % dt=dtrain(1:fix(size(dtrain,1)/10),:);
+   % Ct=Ctrain(1:fix(size(Ctrain,1)/10),:);   
+% 
+
+
+ 
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%     loss1=Result.loss1; 
+%     loss2=Result.loss2;
+%     best_noise_c1=Result.noise_c1;
+%     best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%       bias2=Result.bias2;   
+%  
+
+
+    
+r=find(dtrain>0);
+r1=setdiff(1:length(Ctrain(:,1)),r);
+Y1=dtrain(r,:);
+Y2=dtrain(r1,:);
+cc=Ctrain(r,:);
+dd=Ctrain(r1,:);
+e1=ones(size(cc,1),1);
+e2=ones(size(dd,1),1);
+tic
+    
+    %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+    %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+    [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+
+ 
+
+
+thistoc(i,1)=toc;
+
+
+C=[cc;dd];
+
+[err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+
+
+[err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+
+ if output==1
+fprintf(1,'________________________________________________\n');
+fprintf(1,'Fold %d\n',i);
+fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+
+fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+ end
+
+end % end of for (looping through test sets)
+
+
+
+     trainCorr = sum(tmpTrainCorr*100)/k;
+     testCorr = sum(tmpTestCorr*100)/k;
+     cpu_time=sum(thistoc)/k;
+    
+
+if output == 1
+fprintf(1,'==============================================');
+fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+
+fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+end
+
+testcorrstd=std(100*tmpTestCorr,1)
+
+
+
+
+
+% clear
+% dataset='musk' 
+% load multimention/musk.mat;%a
+% B=[data];
+% cla=1;   
+% A=B(1:end,1:end-1);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,end)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+%     rand('state',a);
+% 
+% 
+%     uniqued = unique(d);
+%     outratio=0.25;
+%     nf=0.1;
+%     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+%         Inde=(find(d==uniqued(jjk,1)));
+%         randn('state',jjk*1000);
+%         % randn('state',a);
+%         outn=fix(size(Inde,1)*outratio);
+%         Mm= sqrt(1)*randn(outn,size(A,2));
+%         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+%         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+%         % if jjk==1
+%         % tempdata=Ctrain(Inde(1:outn,:),:);
+%         % end
+%     end
+%     r=randperm(size(A,1));
+%     d=d(r,:);
+%     % r2=randperm(size(Ctrain,1));
+%     A=A(r,:);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%        %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+
+
+
+
+% clear
+% dataset='spambase' 
+% load multimention/spambase.mat;%a
+% B=[data];
+% cla=1;   
+% A=B(1:end,1:end-1);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,end)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%       % [w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+
+
+
+
+
+% clear
+% dataset='bupa' 
+% load class2/bupadata.mat;%ddddd
+% B=[d,A];
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%     %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+%     
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% clear
+% dataset='haberman' 
+% load class2/haberman.mat;
+% B=[d,A];
+% 
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% % %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+%    
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%      %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% clear
+% dataset='housing' 
+% load class2/housingdata.mat;%a
+% B=[d,A];
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+% 
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%       %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+%     
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% clear
+% dataset='pimdata' 
+% load class2/pimadata.mat;
+% B=[d,A];
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+% 
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%      %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+%     
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% % clear
+% % dataset='monk1' 
+% % load class2/monk1.mat;    %d+
+% %  B=[train;test];
+% %  
+% % cla=1;   
+% % A=B(1:end,2:end);
+% % Max=max(max(A));
+% % Min=min(min(A));
+% % A=2*(A-Min)./(Max-Min)-1;
+% % %A=(A-Min)./(Max-Min);
+% % d=(B(1:end,1)==cla)*2-1;
+% % 
+% % ker.type='lin';
+% % ker.pars=1e-2;
+% % k=10;output=1;
+% % a=50;%input('the state=');
+% % rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.2;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % 
+% % r=randperm(size(d,1));
+% % dd=d(r,:);
+% % AA=A(r,:); 
+% % dtrain=dd(1:fix(size(r,2)),:);
+% % Ctrain=AA(1:fix(size(r,2)),:);  
+% % 
+% %  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+% %   C1=Result.Best_C1; 
+% %   C2=Result.Best_C1;
+% %    best_noise_c1=Result.noise_c1;
+% %    best_noise_c2=Result.noise_c2;
+% %     w1=Result.w1;
+% %     w2=Result.w2;
+% %     bias1=Result.bias1;
+% %       bias2=Result.bias2;   
+% %     
+% %   
+% % 
+% % 
+% % 
+% %   
+% % 
+% % 
+% % [sm sn]=size(A);
+% % cpu_time = 0;
+% % indx = [0:k];
+% % indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % % split trainining set from test set
+% % 
+% % trainCorr=0;
+% % testCorr=0;
+% % 
+% % a=20;%input('the state=');
+% % rand('state',a);
+% % r=randperm(size(d,1));
+% % d=d(r,:);
+% % A=A(r,:); 
+% % 
+% % 
+% % for i = 1:k
+% %     
+% % Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% % 
+% % Ctest = A((indx(i)+1:indx(i+1)),:);
+% % dtest = d(indx(i)+1:indx(i+1));
+% % Ctrain = A(1:indx(i),:);
+% % Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% % dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% % 
+% % 
+% % 
+% % 
+% % 
+% %     
+% % r=find(dtrain>0);
+% % r1=setdiff(1:length(Ctrain(:,1)),r);
+% % Y1=dtrain(r,:);
+% % Y2=dtrain(r1,:);
+% % cc=Ctrain(r,:);
+% % dd=Ctrain(r1,:);
+% % e1=ones(size(cc,1),1);
+% % e2=ones(size(dd,1),1);
+% % tic
+% %     
+% %        %[w1,w2,bias1,bias2,loss1,loss2]=capped_svc_train1(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);
+% %     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% %     
+% %      %[w1,w2,bias1,bias2]=capped_svc_train4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);   
+% %   % [w1,w2,bias1,bias2]=capped_svc4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+% % 
+% % 
+% % thistoc(i,1)=toc;
+% % 
+% % 
+% % C=[cc;dd];
+% % 
+% % [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% % tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% % 
+% % 
+% % [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% % tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% % 
+% %  if output==1
+% % fprintf(1,'________________________________________________\n');
+% % fprintf(1,'Fold %d\n',i);
+% % fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% % fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% % 
+% % fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+% %  end
+% % 
+% % end % end of for (looping through test sets)
+% % 
+% % 
+% % 
+% %      trainCorr = sum(tmpTrainCorr*100)/k;
+% %      testCorr = sum(tmpTestCorr*100)/k;
+% %      cpu_time=sum(thistoc)/k;
+% %     
+% % 
+% % if output == 1
+% % fprintf(1,'==============================================');
+% % fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% % fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% % 
+% % fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% % end
+% % 
+% % testcorrstd=std(100*tmpTestCorr,1)
+% % 
+% % 
+% % 
+% % 
+% % 
+% % 
+% % 
+% % clear
+% % dataset='monk2' 
+% % load class2/monk2.mat;
+% %  B=[train;test];
+% % 
+% % cla=1;   
+% % A=B(1:end,2:end);
+% % Max=max(max(A));
+% % Min=min(min(A));
+% % A=2*(A-Min)./(Max-Min)-1;
+% % %A=(A-Min)./(Max-Min);
+% % d=(B(1:end,1)==cla)*2-1;
+% % 
+% % ker.type='lin';
+% % ker.pars=1e-2;
+% % k=10;output=1;
+% % a=50;%input('the state=');
+% % rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.2;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % 
+% % 
+% % r=randperm(size(d,1));
+% % dd=d(r,:);
+% % AA=A(r,:); 
+% % dtrain=dd(1:fix(size(r,2)),:);
+% % Ctrain=AA(1:fix(size(r,2)),:);  
+% % 
+% %  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+% %   C1=Result.Best_C1; 
+% %   C2=Result.Best_C1;
+% %    best_noise_c1=Result.noise_c1;
+% %    best_noise_c2=Result.noise_c2;
+% %     w1=Result.w1;
+% %     w2=Result.w2;
+% %     bias1=Result.bias1;
+% %       bias2=Result.bias2;   
+% %     
+% %  %%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% % 
+% % 
+% % 
+% %   
+% % 
+% % 
+% % [sm sn]=size(A);
+% % cpu_time = 0;
+% % indx = [0:k];
+% % indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % % split trainining set from test set
+% % 
+% % trainCorr=0;
+% % testCorr=0;
+% % 
+% % a=20;%input('the state=');
+% % rand('state',a);
+% % r=randperm(size(d,1));
+% % d=d(r,:);
+% % A=A(r,:); 
+% % 
+% % 
+% % for i = 1:k
+% %     
+% % Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% % 
+% % Ctest = A((indx(i)+1:indx(i+1)),:);
+% % dtest = d(indx(i)+1:indx(i+1));
+% % Ctrain = A(1:indx(i),:);
+% % Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% % dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% % 
+% % 
+% % 
+% % % rand('state',a);
+% % %     outratio=0.2;
+% % %     nf=0.1;
+% % %     randn('state',i*1000);
+% % %     Index=size(Ctrain,1);
+% % %         outn=fix(Index*outratio);
+% % %         Mm=sqrt(1)+randn(outn,size(Ctrain,2));
+% % %     randn('state',i*500);        
+% % %         dtt= sign(rand(outn,1)-0.5);
+% % %         dtrain=[dtrain;dtt];
+% % %         Ctrain=[Ctrain;Mm];
+% % %     r=randperm(size(Ctrain,1));
+% % %     dtrain=dtrain(r,:);
+% % %     Ctrain=Ctrain(r,:);
+% % 
+% % 
+% % 
+% % % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% % %     rand('state',a);
+% % % 
+% % % 
+% % %     uniqued = unique(dtrain);
+% % %     outratio=0.2;
+% % %     nf=0.1;
+% % %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% % %         Inde=(find(dtrain==uniqued(jjk,1)));
+% % %         randn('state',jjk*1000);
+% % %         % randn('state',a);
+% % %         outn=fix(size(Inde,1)*outratio);
+% % %         Mm= sqrt(1)*randn(outn,size(Ctrain,2));
+% % %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% % %         Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% % %         % if jjk==1
+% % %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% % %         % end
+% % %     end
+% % %     r=randperm(size(Ctrain,1));
+% % %     dtrain=dtrain(r,:);
+% % %     % r2=randperm(size(Ctrain,1));
+% % %     Ctrain=Ctrain(r,:);
+% % %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %  
+% % 
+% %    % dt=dtrain(1:fix(size(dtrain,1)/10),:);
+% %    % Ct=Ctrain(1:fix(size(Ctrain,1)/10),:);   
+% % % 
+% % 
+% % 
+% %  
+% % % 
+% % %  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+% % %   C1=Result.Best_C1; 
+% % %   C2=Result.Best_C1;
+% % %     loss1=Result.loss1; 
+% % %     loss2=Result.loss2;
+% % %     best_noise_c1=Result.noise_c1;
+% % %     best_noise_c2=Result.noise_c2;
+% % %     w1=Result.w1;
+% % %     w2=Result.w2;
+% % %     bias1=Result.bias1;
+% % %       bias2=Result.bias2;   
+% %  
+% % 
+% % 
+% %     
+% % r=find(dtrain>0);
+% % r1=setdiff(1:length(Ctrain(:,1)),r);
+% % Y1=dtrain(r,:);
+% % Y2=dtrain(r1,:);
+% % cc=Ctrain(r,:);
+% % dd=Ctrain(r1,:);
+% % e1=ones(size(cc,1),1);
+% % e2=ones(size(dd,1),1);
+% % tic
+% %     
+% %        %[w1,w2,bias1,bias2,loss1,loss2]=capped_svc_train1(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);
+% %     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% %     
+% %      %[w1,w2,bias1,bias2]=capped_svc_train4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,ker);   
+% %   % [w1,w2,bias1,bias2]=capped_svc4(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+% % 
+% % 
+% % thistoc(i,1)=toc;
+% % 
+% % 
+% % C=[cc;dd];
+% % 
+% % [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% % tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% % 
+% % 
+% % [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% % tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% % 
+% %  if output==1
+% % fprintf(1,'________________________________________________\n');
+% % fprintf(1,'Fold %d\n',i);
+% % fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% % fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% % 
+% % fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+% %  end
+% % 
+% % end % end of for (looping through test sets)
+% % 
+% % 
+% % 
+% %      trainCorr = sum(tmpTrainCorr*100)/k;
+% %      testCorr = sum(tmpTestCorr*100)/k;
+% %      cpu_time=sum(thistoc)/k;
+% %     
+% % 
+% % if output == 1
+% % fprintf(1,'==============================================');
+% % fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% % fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% % 
+% % fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% % end
+% % 
+% % testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% clear
+% dataset='monk3' 
+% 
+%  load class2/monk3.mat; %  ddddd(+) eeeee(+)
+%  
+%  B=[train;test];
+%  
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% % %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+%   
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%     %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+%     
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% clear
+% dataset='spect' 
+% 
+%  load class2/spect.mat;
+%  B=[train;test];
+%  
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% %split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%    % [w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);   
+%    %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% 
+% 
+% clear
+% dataset='sonar' 
+% load class2/sonar.mat;
+% B=[A];
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+% 
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%      % [w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%     %[w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+%     
+%     
+% 
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+% 
+% 
+% 
+% 
+% clear
+% dataset='australian' 
+% load  class2/australian.mat;%(-)
+% 
+% B=[A];
+% cla=1;   
+% A=B(1:end,2:end);
+% Max=max(max(A));
+% Min=min(min(A));
+% A=2*(A-Min)./(Max-Min)-1;
+% %A=(A-Min)./(Max-Min);
+% d=(B(1:end,1)==cla)*2-1;
+% 
+% ker.type='lin';
+% ker.pars=1e-2;
+% k=10;output=1;
+% a=50;%input('the state=');
+% rand('state',a);
+% % %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%人为加噪声
+% %     rand('state',a);
+% % 
+% % 
+% %     uniqued = unique(d);
+% %     outratio=0.25;
+% %     nf=0.1;
+% %     for jjk=1:size(uniqued,1) %%%%%%partion points of each class into k parts.
+% %         Inde=(find(d==uniqued(jjk,1)));
+% %         randn('state',jjk*1000);
+% %         % randn('state',a);
+% %         outn=fix(size(Inde,1)*outratio);
+% %         Mm= sqrt(1)*randn(outn,size(A,2));
+% %         % Ctrain(Inde(1:outn,:),:)=Ctrain(Inde(1:outn,:),:)+nf*(norm(Ctrain(Inde(1:outn,:),:),'fro')/norm(Mm,'fro'))*Mm;
+% %         A(Inde(1:outn,:),:)=A(Inde(1:outn,:),:)+nf*(norm(A(Inde(1:outn,:),:),'fro')/(norm(Mm,'fro')+eps))*Mm;
+% %         % if jjk==1
+% %         % tempdata=Ctrain(Inde(1:outn,:),:);
+% %         % end
+% %     end
+% %     r=randperm(size(A,1));
+% %     d=d(r,:);
+% %     % r2=randperm(size(Ctrain,1));
+% %     A=A(r,:);
+% %      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% r=randperm(size(d,1));
+% dd=d(r,:);
+% AA=A(r,:); 
+% dtrain=dd(1:fix(size(r,2)),:);
+% Ctrain=AA(1:fix(size(r,2)),:);  
+% 
+%  Result=hibiscus_capp(dtrain,Ctrain,k,ker);
+%   C1=Result.Best_C1; 
+%   C2=Result.Best_C1;
+%    best_noise_c1=Result.noise_c1;
+%    best_noise_c2=Result.noise_c2;
+%     w1=Result.w1;
+%     w2=Result.w2;
+%     bias1=Result.bias1;
+%     bias2=Result.bias2;   
+%     %loss1=Result.loss1;
+%     %loss2=Result.loss2;
+%  
+% 
+% 
+% 
+%   
+% 
+% 
+% [sm sn]=size(A);
+% cpu_time = 0;
+% indx = [0:k];
+% indx = floor(sm*indx/k);    %last row numbers for all 'segments'
+% % split trainining set from test set
+% 
+% trainCorr=0;
+% testCorr=0;
+% 
+% a=20;%input('the state=');
+% rand('state',a);
+% r=randperm(size(d,1));
+% d=d(r,:);
+% A=A(r,:); 
+% 
+% 
+% for i = 1:k
+%     
+% Ctest = []; dtest = [];Ctrain = []; dtrain = [];
+% 
+% Ctest = A((indx(i)+1:indx(i+1)),:);
+% dtest = d(indx(i)+1:indx(i+1));
+% Ctrain = A(1:indx(i),:);
+% Ctrain = [Ctrain;A(indx(i+1)+1:sm,:)];
+% dtrain = [d(1:indx(i));d(indx(i+1)+1:sm,:)];
+% 
+% 
+% 
+%     
+% r=find(dtrain>0);
+% r1=setdiff(1:length(Ctrain(:,1)),r);
+% Y1=dtrain(r,:);
+% Y2=dtrain(r1,:);
+% cc=Ctrain(r,:);
+% dd=Ctrain(r1,:);
+% e1=ones(size(cc,1),1);
+% e2=ones(size(dd,1),1);
+% tic
+%     
+%      %[w1,w2,bias1,bias2,noise1,noise2]=capped_svc_train1(cc,dd,C1,C2,ker);
+%      [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,w1,w2,bias1,bias2,ker);
+% %    [w1,w2,bias1,bias2]=capped_svc(cc,dd,C1,C2,best_noise_c1,best_noise_c2,loss1,loss2,w1,w2,bias1,bias2,ker);
+%     
+%    
+% 
+% thistoc(i,1)=toc;
+% 
+% 
+% C=[cc;dd];
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctest,dtest,C,ker);
+% tmpTestCorr(i,1)=1-err/length(Ctest(:,1));
+% 
+% 
+% [err ]= svcerror(w1,w2,bias1,bias2,Ctrain,dtrain,C,ker);
+% tmpTrainCorr(i,1)=1-err/length(Ctrain(:,1));
+% 
+%  if output==1
+% fprintf(1,'________________________________________________\n');
+% fprintf(1,'Fold %d\n',i);
+% fprintf(1,'Training set correctness: %3.2f%%\n',tmpTrainCorr(i,1));
+% fprintf(1,'Testing set correctness: %3.2f%%\n',tmpTestCorr(i,1));
+% 
+% fprintf(1,'Elapse time: %10.4f\n',thistoc(i,1));
+%  end
+% 
+% end % end of for (looping through test sets)
+% 
+% 
+% 
+%      trainCorr = sum(tmpTrainCorr*100)/k;
+%      testCorr = sum(tmpTestCorr*100)/k;
+%      cpu_time=sum(thistoc)/k;
+%     
+% 
+% if output == 1
+% fprintf(1,'==============================================');
+% fprintf(1,'\nTraining set correctness: %3.2f%%',trainCorr);
+% fprintf(1,'\nTesting set correctness: %3.2f%%',testCorr);
+% 
+% fprintf(1,'\nAverage cpu_time: %10.4f\n',cpu_time);
+% end
+% 
+% testcorrstd=std(100*tmpTestCorr,1)
+
+
+
+
+
+
+
+
